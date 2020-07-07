@@ -1,0 +1,45 @@
+Se escriben de la manera
+
+parametros -> cuerpo
+
+Y representan un método abstracto de una interfaz funcional
+
+Suponemos la interfaz funcional:
+
+#+BEGIN_SRC java
+public interface ficticia {
+       public void aceptar();
+}
+#+END_SRC
+
+Si creásemos un objeto tendríamos que implementar el metodo aceptar mediante una clase anónima:
+
+#+BEGIN_SRC java
+  Ficticia f = new Ficticia () {
+      @Override
+      public void aceptar() {
+	System.out.println();
+      }
+  }
+#+END_SRC
+
+Si utilizamos una expresión lambda podríamos escribir:
+
+#+BEGIN_SRC java
+  Ficticia f = () -> { System.out.println("Hola, mundo"); };
+#+END_SRC
+
+Al ser sólo una líne podríamos prescindir de las llaves.
+
+Si el método abstracto de la interfaz tuviera un parámetro:
+#+BEGIN_SRC java
+public interface ficticia {
+       public void aceptar(int valor);
+}
+#+END_SRC
+
+Podríamos usarlo en los paréntesis del principio de la expresión lambda, con o sin el tipo de dato, ya que el compilador inferirá el tipo en base a la interfaz.
+
+#+BEGIN_SRC java
+  Ficticia f = (valor) -> { System.out.println("Hola, mundo" + valor); };
+#+END_SRC

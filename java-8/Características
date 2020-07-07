@@ -1,0 +1,15 @@
+* Interfaces funcionales
+  - Permiten implementación de código por defecto (Herencia múltiple)
+
+* Expresiones lambda
+
+* Métodos referenciados (Referencia a funciones por su nombre)
+
+* Métodos default
+  - Implementación por defecto en interfaces
+
+* API Stream
+  - Manejo de datos en las colecciones
+
+* Clase optional
+  - Enfasis en mejores practicas con valores null

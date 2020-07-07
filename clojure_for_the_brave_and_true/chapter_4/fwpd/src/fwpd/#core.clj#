@@ -1,0 +1,43 @@
+(ns fwpd.core)
+(def filename "resources/suspects.csv")
+
+(def vamp-keys [:name :glitter-index])
+
+;; Convierte un string a entero
+(defn str->int
+  [str]
+  (Integer. str))
+
+;; asocia un valor a la conversión en entero de otro
+(def conversions {:name identity
+                  :glitter-index str->int})
+
+;; obtiene de una clave y una cadena que representa a un número su valor numérico
+(defn convert
+  [vamp-key value]
+  ((get conversions vamp-key) value))
+
+;; Convierte un csv en una lista de vectores con los datos como cadenas,
+;; El string se convierte en un vector de strings separados por el salto de línea \n,
+;; luego a cada entrada del vector se le aplica la función split por la , para separar los valores
+;; esto se hace mediante la función map
+(defn parse
+  "Convert a CSV into rows of columns"
+  [string]
+  (map #(clojure.string/split % #",")
+       (clojure.string/split string #"\n")))
+
+;; A cada fila de nuestra lista de vectores se le asocia la clave :name al primer elemento y la clave :glitter-index al segundo, retornando un mapa clave-valor con todos los elementos.
+(defn mapify
+  "Return a seq of maps"
+  [rows]
+  (map (fn [unmapped-row]
+         (reduce (fn [row-map [vamp-key value]]
+                   (assoc row-map vamp-key (convert vamp-key value)))
+                 {}
+                 (map vector vamp-keys unmapped-row)))
+       rows))
+
+(defn glitter-filter
+  [minimum-glitter records]
+  (filter #(>= (:glitter-index %) minimum-glitter) records))
