@@ -1,0 +1,23 @@
+* Introducción
+Una interfaz funcional es aquella que solo tiene un método abstracto, pudiendo tener otros estáticos o default, define objetos que no guardan valores como los objetos tradicionales, sino que sirven para guardar funciones.
+
+Una interfaz funcional se anota con @FunctionalInterface y puede tener otros métodos abstractos siempre que provengan de la clase Object para poder sobreescribirlos.
+
+Un ejemplo con la interfaz Comparator:
+
+#+BEGIN_SRC java
+  package java.util;
+
+  public interface Comparator<T> {
+    int compeare(T o1, T o2);
+
+    boolean equals(Object obj);
+  }
+#+END_SRC
+
+Si una interfaz está anotada con @FunctionalInterface el compilador dará error si esta no se ajusta a los patrones de las interfaces funcionales.
+
+Las interfaces funcionales que están en la versión 8 de Java se encuentran en el paquete java.util.function.
+
+** La interfaz Function
+Requiere dos genéricos, su método abstracto apply recibie un parámetro del primer tipo y devuelve un objeto del segundo tipo, por lo que se utiliza principalmente para transformar tipos.

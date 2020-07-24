@@ -1,4 +1,5 @@
-Se escriben de la manera
+* Sintaxis de una expresión lambda
+Las expresiones lambda se escriben de la manera
 
 parametros -> cuerpo
 
@@ -42,4 +43,56 @@ Podríamos usarlo en los paréntesis del principio de la expresión lambda, con 
 
 #+BEGIN_SRC java
   Ficticia f = (valor) -> { System.out.println("Hola, mundo" + valor); };
+#+END_SRC
+
+Si sólo hay un parámetro se pueden omitir los paréntesis.
+
+Si queremos que la expresión retorne algún valor podemos omitir la palabra return y esta devolvería el valor de la última expresión ejecutada.
+
+Un ejemplo con la interfaz ActionListener (Un manejador de eventos para Swing): 
+#+BEGIN_SRC java
+  public interface ActionListener {
+    public void ActionPerformed(ActionEvent event);
+  }
+
+  JButton button = new JButton("Hola");
+
+  //Siguiendo el metodo clásico:
+  button.addActionListener(new ActionListener() {
+
+      @Override
+      public void ActionPerformed(ActionEvent event) {
+	System.out.println("Hola");
+      }
+    
+    });
+
+  //Utilizando una expresión lambda
+  button.addActionListener((event) -> System.out.println("Hola"););
+#+END_SRC
+* Inferencia de tipos
+
+#+BEGIN_SRC java
+  public interface Function {
+    public void accept(int entero);
+  }
+
+  //El compilador infiere el tipo de parámetro por medio de la interfaz
+  Function f = parametro -> System.out.println(parametro);
+
+  //Si se trata de un paremetro de un metodo de una clase podemos usarlo también y el compilador lo inferirá igualmente:
+  MiClase obj = new MiClase();
+  obj.metodo(parametro -> System.out.println(parametro));
+  //Esto podría dar pie a pensar que estamos pasando directamente una función, cuando el compilador lo traducirá a el objeto correspondiente.
+  //Haremos uso extensivo de esta sintaxis.
+
+  public class MiClase {
+
+    public void metodo(Function parametro) {
+
+      //Hace algo con el parametro
+
+    }
+
+  }
 #+END_SRC
