@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany._ejercicios_expresiones_lambda.ej2_11;
+package com.mycompany._ejercicios_expresiones_lambda.ej2_10;
 
 /**
  *

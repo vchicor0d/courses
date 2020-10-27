@@ -1,0 +1,494 @@
+* Sintaxis de una expresión lambda
+Las expresiones lambda se escriben de la manera
+
+parametros -> cuerpo
+
+Y representan un método abstracto de una interfaz funcional
+
+Suponemos la interfaz funcional:
+
+#+BEGIN_SRC java
+public interface ficticia {
+       public void aceptar();
+}
+#+END_SRC
+
+Si creásemos un objeto tendríamos que implementar el metodo aceptar mediante una clase anónima:
+
+#+BEGIN_SRC java
+  Ficticia f = new Ficticia () {
+      @Override
+      public void aceptar() {
+	System.out.println();
+      }
+  }
+#+END_SRC
+
+Si utilizamos una expresión lambda podríamos escribir:
+
+#+BEGIN_SRC java
+  Ficticia f = () -> { System.out.println("Hola, mundo"); };
+#+END_SRC
+
+Al ser sólo una líne podríamos prescindir de las llaves.
+
+Si el método abstracto de la interfaz tuviera un parámetro:
+#+BEGIN_SRC java
+public interface ficticia {
+       public void aceptar(int valor);
+}
+#+END_SRC
+
+Podríamos usarlo en los paréntesis del principio de la expresión lambda, con o sin el tipo de dato, ya que el compilador inferirá el tipo en base a la interfaz.
+
+#+BEGIN_SRC java
+  Ficticia f = (valor) -> { System.out.println("Hola, mundo" + valor); };
+#+END_SRC
+
+Si sólo hay un parámetro se pueden omitir los paréntesis.
+
+Si queremos que la expresión retorne algún valor podemos omitir la palabra return y esta devolvería el valor de la última expresión ejecutada.
+
+Un ejemplo con la interfaz ActionListener (Un manejador de eventos para Swing): 
+#+BEGIN_SRC java
+  public interface ActionListener {
+    public void ActionPerformed(ActionEvent event);
+  }
+
+  JButton button = new JButton("Hola");
+
+  //Siguiendo el metodo clásico:
+  button.addActionListener(new ActionListener() {
+
+      @Override
+      public void ActionPerformed(ActionEvent event) {
+	System.out.println("Hola");
+      }
+    
+    });
+
+  //Utilizando una expresión lambda
+  button.addActionListener((event) -> System.out.println("Hola"););
+#+END_SRC
+* Inferencia de tipos
+
+#+BEGIN_SRC java
+  public interface Function {
+    public void accept(int entero);
+  }
+
+  //El compilador infiere el tipo de parámetro por medio de la interfaz
+  Function f = parametro -> System.out.println(parametro);
+
+  //Si se trata de un paremetro de un metodo de una clase podemos usarlo también y el compilador lo inferirá igualmente:
+  MiClase obj = new MiClase();
+  obj.metodo(parametro -> System.out.println(parametro));
+  //Esto podría dar pie a pensar que estamos pasando directamente una función, cuando el compilador lo traducirá a el objeto correspondiente.
+  //Haremos uso extensivo de esta sintaxis.
+
+  public class MiClase {
+
+    public void metodo(Function parametro) {
+
+      //Hace algo con el parametro
+
+    }
+
+  }
+#+END_SRC
+
+* Interfaces Funcionales
+Una interfaz funcional es aquella que solo tiene un método abstracto, pudiendo tener otros estáticos o default, define objetos que no guardan valores como los objetos tradicionales, sino que sirven para guardar funciones.
+
+Una interfaz funcional se anota con @FunctionalInterface y puede tener otros métodos abstractos siempre que provengan de la clase Object para poder sobreescribirlos.
+
+Un ejemplo con la interfaz Comparator:
+
+#+BEGIN_SRC java
+  package java.util;
+
+  public interface Comparator<T> {
+    int compeare(T o1, T o2);
+
+    boolean equals(Object obj);
+  }
+#+END_SRC
+
+Si una interfaz está anotada con @FunctionalInterface el compilador dará error si esta no se ajusta a los patrones de las interfaces funcionales.
+
+Las interfaces funcionales que están en la versión 8 de Java se encuentran en el paquete java.util.function.
+
+Una interfaz funcional es normalmente usada junto a una expresión lambda que define la función, por ejemplo, si tenemos una interfaz funcional /Calculadora/ que define un método calcular de la siguiente manera:
+
+#+BEGIN_SRC java
+public interface Calculadora {
+    
+    
+    public double calcular(int x, int y);
+    
+    
+}
+#+END_SRC
+
+Para utilizarla necesitamos implementar el método abstracto, pero en este caso, utilizaremos una serie de expresiones lambda para hacerlo:
+
+#+BEGIN_SRC java
+  public class LambdaTest3 {
+    
+    public static void main (String [] args) {
+
+      //Cada uno de los parámetros que recibe el método operación es una
+      //implementación de la interfaz Calculadora, concretamente de su
+      //método calcular
+    
+      // Suma
+      operacion((x, y) -> x + y);
+    
+      //Resta
+      operacion((x, y) -> x - y);
+
+      //Multiplicación
+      operacion((x, y) -> x * y);
+
+      //División
+      operacion((x, y) -> x / y);
+
+      //Resto
+      operacion((x, y) -> x % y);
+        
+    }
+    
+    private static void operacion (Calculadora cal) {
+        
+      int x=4, y=5;
+      double resultado = cal.calcular(x, y);
+      System.out.println(resultado);
+        
+    }
+    
+  }
+#+END_SRC
+
+** La interfaz Function
+La interfaz Function aplica una función a un elemento, requiere dos genéricos, su método abstracto ~apply~ recibie un parámetro del primer tipo y devuelve un objeto del segundo tipo, por lo que se utiliza principalmente para transformar tipos.
+
+#+BEGIN_SRC java
+public class TestFunction {
+    public static void main(String[] args) {
+        /*
+        La interfaz Function aplica una función a un elemento.
+        */
+        Function<Integer,String> convertidor = x -> Integer.toString(x);
+        System.out.println(convertidor.apply(30).length());
+        System.out.println(convertidor.apply(3).length());
+    }
+}
+#+END_SRC
+
+** La interfaz BiFunction
+Es similar a Function salvo porque admite dos elementos de entrada
+
+#+BEGIN_SRC java
+public class EjercicioBiFunction {
+    
+    public static void main(String[] args) {
+        /*
+        La interfaz BiFunction aplica una función a dos elementos
+        */
+        BiFunction<String, String, String> bi = (x, y) -> x + y;
+        System.out.println(bi.apply("Hola, ", "mundo"));
+    }
+    
+}
+#+END_SRC
+
+** La interfaz Predicate
+La interfaz Predicate se refiere a un predicado booleano, su método abstracto /test/ comprueba si se cumple una determinada condición para un valor concreto.
+
+#+BEGIN_SRC java
+public class TestPredicate1 {
+    
+    public static void main(String[] args) {
+        
+        /*
+        A la interfaz predicate se le pasa un test booleano
+        */
+        Predicate<Integer> predicate = (valor) -> valor > 0;
+        
+        System.out.println(predicate.test(123));
+    }
+    
+}
+#+END_SRC
+
+** La interfaz BiPredicate
+De manera análoga a lo que pasaba entre Function y BiFunction tenemos la interfaz BiPredicate para complementar a Predicate, en este caso determina si se cumple una condición (O predicado lógico) para dos elementos
+
+#+BEGIN_SRC java
+public class TestBiPredicate {
+
+    public static void main(String[] args) {
+        
+        /*
+        La interfaz BiPredicate aplica un test a 2 elementos
+        */
+        BiPredicate<Integer, Integer> bp = 
+                (x, y) -> x < y;
+        
+        System.out.println(bp.test(2, 3));
+    }
+    
+}
+#+END_SRC
+
+** La interfaz Consumer
+Es similar a la interfaz Function, aplica una función a un elemento, pero en este caso no devuelve ningún valor.
+
+#+BEGIN_SRC java
+public class TestConsumer {
+
+    public static void main(String[] args) {
+        
+        /*
+        Consumer recibe un argumento y ejecuta una función sobre el
+        */
+        Consumer<String> cons = x -> System.out.println(x.toUpperCase());
+        
+        cons.accept("Víctor");
+    }
+    
+}
+#+END_SRC
+
+** La interfaz BiConsumer
+De manéra análoga a las interfaces anteriores, es igual que Consumer pero admite dos elementos:
+
+#+BEGIN_SRC java
+public class InterfazBiConsumerTest {
+    
+    public static void main(String[] args) {
+        
+        BiConsumer<Double, Double> biConsumer = 
+                (num1, num2) -> System.out.println("La multiplicación es: " + num1*num2);
+        
+        biConsumer.accept(15.2, 2.4);
+        
+    }
+    
+}
+#+END_SRC
+
+Un buen ejemplo de el uso de esta interfaz puede ser para imprimir la clave y el valor de un objeto de la clase Map
+
+#+BEGIN_SRC java 
+//Usando el stream forEach, se podría hacer con un bucle
+map.forEach((key, value) -> System.out.println("Clave: "+key + "\tValor: "+value));
+#+END_SRC
+
+** La interfaz supplier
+Supplier nos proporciona un elemento que haya sido predefinido en su implementación:
+
+#+BEGIN_SRC java
+public class SupplierTest {
+    
+    public static void main(String[] args) {
+        
+        /*
+        Supplier no admite parámetros y devuelve un objeto del tipo especificado
+        */
+        Supplier<String> sup = () -> "Hola, Mundo";
+        
+        System.out.println(sup.get());
+        
+    }
+    
+}
+#+END_SRC
+
+** La interfaz UnaryOperator
+Es una especialización de la interfaz Function en la que sus parámetros de entrada y de salida son del mismo tipo
+
+#+BEGIN_SRC java
+public class TestUnaryOperator {
+    public static void main(String[] args) {
+        /*
+        La interfaz UnaryOperator aplica una función a un elemento.
+        */
+        UnaryOperator<Integer> cuadrado = x -> x*x;
+        System.out.println(cuadrado.apply(30));
+        System.out.println(cuadrado.apply(3));
+    }
+}
+#+END_SRC
+
+** La interfaz BinaryOperator
+Análogamente con la anterior, es una especialización de la interfaz BiFunction en la cual todos sus operadores son del mismo tipo
+
+#+BEGIN_SRC java
+public class EjercicioBinaryOperator {
+    
+    public static void main(String[] args) {
+        /*
+        La interfaz BinaryOperator aplica una función a dos elementos
+        */
+        BinaryOperator<String> bi = (x, y) -> x + y;
+        System.out.println(bi.apply("Hola, ", "mundo"));
+    }
+    
+}
+#+END_SRC
+
+** La interfaz Comparator
+La interfaz comparator sirve para comparar dos objetos de una misma clase, devuelve un número entero menor que 0 si el primer objeto es mayor, un número mayor que 0 si el segundo objeto es el mayor y un 0 si son iguales, un ejemplo sería comparar personas por su número de identificación
+
+#+BEGIN_SRC java
+public class OrdenarPersonaPorId implements Comparator<Persona>{
+    
+    @Override
+    public int compare(Persona o1, Persona o2) {
+        return o1.getIdPersona() - o2.getIdPersona();
+    }
+    
+}
+#+END_SRC
+
+* Métodos referenciados
+
+* Streams
+Nos permiten procesar datos de manera declarativa similar a como se hace en SQL. Los streams se ubican en el paquete /java.util.stream/ y todas sus clases descienden de ~BaseStream~ y ~AutoCloseable~ por lo que pueden ser utilizados en bloques /Try with Resources/, se ejecutan sobre colecciones y normalmente cada método de un stream devuelve otro con su resultado con lo que se pueden crear concatenaciones de varios de ellos llamadas /pipelines/.
+
+Entre las ventajas de los streams con respecto a un bucle tradicional podemos encontrar que, al procesarse las operaciones de manera secuencial y devolver resultado sólo con los elementos que necesitemos para la siguiente operación no repetiremos operaciones y condicionales como sucede en los bucles. Otra ventaja importante es que se pueden paralelizar muy fácilmente para aprovechar las capacidades multinucleo de los procesadores modernos.
+
+Por ejemplo, si queremos hacer la suma de los cuadrados de los numeros impares que se encuentren del 1 al 5 tradicionalmente lo haríamos así (en lo que se llama una iteración externa):
+
+#+BEGIN_SRC java
+  public static void main (String [] args) {
+    List<Integer> numeros = Arrays.asList(1,2,3,4,5);
+
+    int suma= 0;
+    for (int num: numeros) {
+      if (num % 2 == 1) {
+	int cuadrado = num * num;
+	suma += cuadrado;
+      }
+    }
+
+    System.out.println(suma);
+  }
+#+END_SRC
+
+En este ejemplo se itera sobre la lista, se comprueba que sea impar y si lo es se suma su cuadrado al valor de la variable suma, sin embargo, con streams podemos hacerlo mediante lo que se conoce como una iteración interna, es decir, de una manera declarativa:
+
+#+BEGIN_SRC java
+  public static void main (String [] args) {
+    List<Integer> numeros = Arrays.asList(1,2,3,4,5);
+
+    //Con stream obtenemos el stream de la lista
+    int suma = numeros.stream()
+      //Con filter filtramos sólo los elementos que nos interesen,
+      // recibe como parámetro una implementación de la interfaz Predicate
+      .filter(n -> n % 2 == 1) // {1,3,5}
+      // Con map aplicamos una funcion a cada uno de los elementos,
+      // recibe como parémetro una implementación de la interfaz Function
+      .map(n -> n * n) // {1,9,25}
+      // Y con reduce cerramos el stream aplicándole una operación,
+      // recibe un parámetro de identidad de la operación (0)
+      // y una implementación de la interfaz BinaryOperator
+      .reduce(0, Integer::sum); // 35
+
+    System.out.println(suma);
+  }
+#+END_SRC
+
+Aunque en este ejemplo hemos aplicado las ventajas de stream sobre los bucles tradicionales sigue aplicando los métodos de forma secuencial, si queremos aprovechar la potencia de los procesadores multinucleo debemos sutituir el método ~stream()~ por el método ~parallelStream()~ que indicará al sistema que debe ejecutar esa operación en múltiples núcleos a la vez de forma paralela.
+
+** Operaciones intermedias y operaciones terminales
+Las operaciones intermedias son aquellas que se producen en el stream y que devuelven otro stream con los datos procesados, estas operaciones son perezosas (lazy) y sólo se ejecutan una vez una operación terminal sea invocada.
+
+Las operaciones terminales son aquellas que sumarizan la operación que queremos realizar con el stream y lo cierran.
+
+** Creación de Streams
+
+*** A partir de valores
+La case Stream provee el método estático ~of~ para crear streams a partir de cualquier objeto o array de objetos
+
+#+BEGIN_SRC java
+        Stream<String> stream1 = Stream.of("Curso de programación");
+        
+        //Con expresiones lambda
+        stream1.forEach(n -> System.out.println(n));
+        
+        //Con métodos referenciados
+        stream1.forEach(System.out::println);
+#+END_SRC
+
+*** A partir de objetos complejos
+En este caso utilizaremos el método estático ~builder~ de la clase Stream, que admite tipos genéricos para poder añadir objetos
+
+#+BEGIN_SRC java
+        Stream<Estudiante> streamEstudiantes = Stream.<Estudiante>builder()
+                .add(new Estudiante("n01", 17, 1.70, 9.5))
+                .add(new Estudiante("n02",21,1.64,9.1))
+                .build();
+        
+        streamEstudiantes.forEach(estudiante -> System.out.println(estudiante.getPromedio()));
+#+END_SRC
+
+*** A partir de rangos numéricos
+Las implementaciones IntStream, LongStream y DoubleStream proveen de métodos como ~range()~ para obtener rangos de números a partir de los que operar:
+
+#+BEGIN_SRC java
+        // Rango abierto, llega hasta 20
+        IntStream unoAVeinte = IntStream.range(1, 21);
+
+        // Rango cerrado, llega hasta 20
+        unoAVeinte = IntStream.rangeClosed(1, 20);
+        
+        unoAVeinte.forEach(System.out::println);
+#+END_SRC
+
+*** A partir de funciones
+La clase Stream provee de los métodos estáticos ~generate~ para crear streams secuenciales e ~iterate~, para crear streams secuenciales ordenados.
+
+**** Iterate
+El método ~iterate~ recibe dos parámetros, una "semilla" que será el primer elemento de la colección y un ~UnaryOperator~ que aplicará una función sobre el primer elemento generando el segundo, y a continuación la aplicará sobre el segundo para generar el tercero y así sucesivamente. Este stream generado es infinito y es necesario aplicar el método ~limit()~ para obtener los valores:
+
+#+BEGIN_SRC java
+        
+        Stream<Long> primerosDiez = Stream.iterate(1L, n -> n +1)
+                .limit(10);
+        
+        primerosDiez.forEach(System.out::println);
+        
+        Stream.iterate(1L, n -> n+1)
+                .filter(n -> n % 2 == 0)
+                .limit(20)
+                .forEach(System.out::println);
+        
+        Stream.iterate(1L, n -> n+1)
+                .filter(n -> n % 2 == 0)
+                .skip(100)
+                .limit(5)
+                .forEach(System.out::println);
+
+#+END_SRC
+
+**** Generate
+El método ~generate~ recibe un parámetro que será la función que creará los valores a usar;
+
+#+BEGIN_SRC java
+        Stream.generate(Math::random)
+                .limit(5)
+                .forEach(System.out::println);
+
+#+END_SRC
+
+**** La clase Random
+La clase random del paquete ~java.util~ provee los métodos ~ints()~, ~longs()~ y ~doubles()~ que genera streams de esas respectivas clases:
+
+#+BEGIN_SRC java
+        
+        new Random().ints()
+                .limit(5)
+                .forEach(System.out::println);
+#+END_SRC

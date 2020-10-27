@@ -1,0 +1,6 @@
+(require 'series-test)
+exit
+(require 'series-test)
+(clojure.test/run-test 'series-test)
+(clojure.test/run-tests 'series-test)
+exit

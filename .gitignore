@@ -1,2 +1,4 @@
-/java-8/2_Ejercicios_expresiones_lambda/target/
-/java-8/3_Interfaces_funcionales/target/
+target/
+node_modules/
+elm-stuff/
+*.class

@@ -1,0 +1,33 @@
+(page "index.html"
+      (:require
+   [hoplon.twitter.bootstrap :as b :refer [tab tabs]]))
+
+(def clicks (cell 0))
+(def history (cell []))
+(add-watch clicks :history #(swap! history conj %3))
+(cell= (print history))
+(def clicks-even? (cell= (even? clicks)))
+(def color (cell= (if clicks-even? "blue" "red")))
+
+(html
+ (head
+  (title "Address book")
+  (link :href "app.css" :rel "stylesheet" :type "text/css"))
+ (body
+  (tabs
+   (tab :name "Tab1"
+    (h1 :mouseover #(swap! clicks dec) clicks)
+    (button :click #(swap! clicks inc) "Increase")
+    (button :click #(reset! clicks 0) "Reset")
+    (p :style (cell= (str "color:" color))
+       (text "clicks-even? = ~{clicks-even?}"))
+    (table
+     (tr
+      (th "Nombre")
+      (th "DNI"))
+     (tr
+      (td "Víctor")
+      (td "12334566F"))))
+   (tab :name "Tab2"
+    (h1 "Hola, pestaña!"))))
+ )

@@ -1,0 +1,17 @@
+body {
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    color: blue;
+}
+
+.tab-content .tab-pane {
+    display: none;
+}
+
+.tab-content .active {
+    display: block;
+}
+

@@ -1,0 +1,13 @@
+(require 'two-fer)
+(clojure.test/run-tests 'two-fer)
+(require 'two-fer-test)
+(clojure.test/run-tests 'two-fer-test)
+(require 'two-fer-test)
+(clojure.test/run-tests 'two-fer-test)
+(two-fer "x")
+(require 'two-fer)
+(two-fer "x")
+exit
+(require 'two-fer-test)
+(clojure.test/run-tests 'two-fer-test)
+exit
