@@ -2,3 +2,8 @@ target/
 node_modules/
 elm-stuff/
 *.class
+.idea/
+.lein-failures
+.clj-kondo/
+.lsp/
+
