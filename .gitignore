@@ -6,4 +6,4 @@ elm-stuff/
 .lein-failures
 .clj-kondo/
 .lsp/
-
+.calva/
