@@ -2,11 +2,13 @@
 
 (defn- prime? [n]
   (loop [current 2]
-    (if (and (> n current) (= 0 (mod n current)))
-      false
-      (if (= n current)
-        true
-        (recur (inc current))))))
+    (let [module (mod n current)
+          result (/ n current)]
+      (if (and (> n current) (zero? module))
+        false
+        (if (< result current)
+          true
+          (recur (inc current)))))))
 
 (defn nth-prime
   "Returns the prime number in the nth position."
